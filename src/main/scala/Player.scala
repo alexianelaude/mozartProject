@@ -1,5 +1,5 @@
 
-package concert
+package upmc.akka.leader
 
 import math._
 
@@ -44,6 +44,7 @@ def note_off (pitch:Int, chan:Int): Unit = {
 class PlayerActor () extends Actor{
   import PlayerActor._
   import ProviderActor._
+  import DataBaseActor._
   //device.open()
 
   def receive = {
