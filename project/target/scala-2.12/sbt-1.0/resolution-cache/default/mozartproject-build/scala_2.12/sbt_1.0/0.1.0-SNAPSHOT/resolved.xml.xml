@@ -4,7 +4,7 @@
 		module="mozartproject-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20220115213537"
+		publication="20220116225302"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>

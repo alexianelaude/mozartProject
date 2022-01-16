@@ -1,6 +1,2 @@
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Checker.scala:45:33: match may not be exhaustive.[0m
-[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following input: Success((x: Any forSome x not in upmc.akka.leader.HeartStatuses.HeartStatus))[0m
-[0m[[0m[33mwarn[0m] [0m[0m          	   		life.onComplete {[0m
-[0m[[0m[33mwarn[0m] [0m[0m          	   		                ^[0m
 [0m[[0m[33mwarn[0m] [0m[0mthere was one feature warning; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

@@ -1,6 +1,8 @@
 package upmc.akka.leader
 
 import akka.actor._
+import akka.actor.{ActorInitializationException , ActorKilledException, OneForOneStrategy} 
+import akka.actor.SupervisorStrategy._
 
 case class Start ()
 
@@ -19,6 +21,16 @@ class Node (val id:Int) extends Actor {
      val conductor = context.actorOf(Props(classOf[Conductor], id), name = "Conductor")
      val player = context.actorOf(Props[PlayerActor], name = "Player")
 
+     var availableMusicians : List[Int] = List()
+
+     final override val supervisorStrategy = OneForOneStrategy() { 
+     	case _: ActorInitializationException => Stop 
+     	case _: ActorKilledException => Stop
+		case _: Exception => Restart
+		case _ => Escalate
+	}
+
+
      def receive = {
 
           // Initialisation
@@ -32,7 +44,7 @@ class Node (val id:Int) extends Actor {
           		displayActor ! Message ("Beginning conductor election, with musicians' status: " + musiciansAlive.mkString(", "))
           		var conductorId = -1
           		var i = -1
-          		while (i <= 3 && conductorId < 0) {
+          		while (i <= 2 && conductorId < 0) {
           			i = i + 1
           			if (musiciansAlive(i) == LivePlayer) {
           				conductorId = i
@@ -41,10 +53,15 @@ class Node (val id:Int) extends Actor {
           		if (i == id) {
           			// Node becomes conductor
           			displayActor ! Message("Node " + this.id + " has been elected conductor")
-          			conductor ! Conduct
+          			conductor ! StartConductor
           			heart ! ChangeStatus(LiveConductor)
           		}
+          	}
+          case AvailableMusicians(musicians:List[Int]) => {
+          		availableMusicians = musicians
           }
-
+	      case RequestMusicians => {
+	      	sender ! availableMusicians
+	      }
      }
 }

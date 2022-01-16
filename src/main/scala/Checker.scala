@@ -4,6 +4,7 @@ import akka.actor._
 import akka.util.Timeout
 import akka.pattern.ask
 import scala.concurrent.Await
+import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +18,7 @@ object Checker {
 
 	case class Check ()
 	case class RunElection(musiciansAlive:Array[HeartStatus])
-	case class AvailableMusicians()
+	case class AvailableMusicians(musicians:List[Int])
 
 }
 
@@ -41,30 +42,34 @@ class Checker () extends Actor {
           // Initialisation
           case Check => {
           	   for (i <- 0 to 3) {
-          	   		var life = hearts(i) ? CheckLiveness
-          	   		life.onComplete {
+          	   		var future = hearts(i) ? CheckLiveness
+          	   		future.onComplete {
           	   			case Success(status:HeartStatus) => {
-          	   				println("Found musician " + i.toString + " with status " + status)
+          	   				println("Received status " + status + " from node " + i.toString)
           	   				musiciansAlive(i) =  status
           	   			}
-          	   			case Failure(e) => musiciansAlive(i) = Dead
+          	   			case Success(a:Any) => { 
+          	   				println("Received: " + a)
+          	   				musiciansAlive(i) = Dead
+          	   			}
+          	   			case Failure(e) => {
+          	   				musiciansAlive(i) = Dead
+          	   			}
           	   		}
           	   }
           	   if (musiciansAlive.forall( _ != LiveConductor)) {
           	   	  context.parent ! RunElection(musiciansAlive)
           	   }
-      		   Thread.sleep(10000)
+          	   var musicians: List[Int] = List()
+         		for (i <- 0 to 3) {
+	         		if (musiciansAlive(i) == LivePlayer) {
+	         			musicians = musicians ::: List(i)
+	         		}
+	         	}
+	         	context.parent ! AvailableMusicians(musicians) //Keep node up to date of available musicians (for Conductor)
+      		   Thread.sleep(5000)
                receive(Check)         
           }
-         case AvailableMusicians => {
-         	var musicians: List[Int] = List()
-         	for (i <- 0 to 3) {
-         		if (musiciansAlive(i) == LivePlayer) {
-         			musicians = musicians ::: List(i)
-         		}
-         	}
-         	sender ! musicians
-         }
 
      }
 }

@@ -6,9 +6,9 @@ import akka.util.Timeout
 object HeartStatuses extends Enumeration {
   type HeartStatus = Value
 
-  val LiveConductor = Value("Conductor alive")
-  val LivePlayer = Value("Player alive")
-  val Dead = Value("Dead musician")
+  val LiveConductor = Value("Conductor")
+  val LivePlayer = Value("Player")
+  val Dead = Value("Dead")
 }
 
 object Heart {
