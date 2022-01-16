@@ -1,16 +1,6 @@
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Conductor.scala:46:29: non-variable type argument Int in type pattern List[Int] (the underlying of List[Int]) is unchecked since it is eliminated by erasure[0m
-[0m[[0m[33mwarn[0m] [0m[0m 				case Success(musicians:List[Int]) => {[0m
-[0m[[0m[33mwarn[0m] [0m[0m 				                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Node.scala:28:43: fruitless type test: a value of type List[upmc.akka.leader.Heart.HeartStatus] cannot also be a List[upmc.akka.leader.Heart] (the underlying of List[upmc.akka.leader.Heart]) (but still might match its erasure)[0m
-[0m[[0m[33mwarn[0m] [0m[0m          case RunElection(musiciansAlive:List[Heart]) => {[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                          ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Checker.scala:48:33: match may not be exhaustive.[0m
-[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following input: Success((x: Any forSome x not in upmc.akka.leader.Heart.HeartStatus))[0m
+[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Checker.scala:45:33: match may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following input: Success((x: Any forSome x not in upmc.akka.leader.HeartStatuses.HeartStatus))[0m
 [0m[[0m[33mwarn[0m] [0m[0m          	   		life.onComplete {[0m
 [0m[[0m[33mwarn[0m] [0m[0m          	   		                ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Conductor.scala:45:23: match may not be exhaustive.[0m
-[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following input: Success((x: Any forSome x not in List[?]))[0m
-[0m[[0m[33mwarn[0m] [0m[0m 			future.onComplete {[0m
-[0m[[0m[33mwarn[0m] [0m[0m 			                  ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mthere were four feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0m5 warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0mthere was one feature warning; re-run with -feature for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m

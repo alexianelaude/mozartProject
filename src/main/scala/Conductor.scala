@@ -22,11 +22,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
  	import DataBaseActor._
  	import Checker._
  	import scala.util.Random
+ 	import HeartStatuses._
 
- 	implicit val resolveTimeout = Timeout(3 seconds)
+ 	implicit val resolveTimeout = Timeout(5 seconds)
 
   	val provider = context.actorOf(Props[ProviderActor], name = "Provider")
-  	val future_checker = context.actorSelection("akka.tcp://LeaderSystem" + id.toString + "@10.0.0.1:600" + id.toString + "/user/Checker")
+  	val future_checker = context.actorSelection("akka.tcp://LeaderSystem" + id.toString + "@127.0.0.1:600" + id.toString + "/user/Node" + id.toString + "/Checker")
   	val checker = Await.result(future_checker.resolveOne()(resolveTimeout), resolveTimeout.duration)
   	var counter = 0
 
@@ -46,7 +47,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  				case Success(musicians:List[Int]) => {
  					val rand = (new Random).nextInt(musicians.length - 1)
  					val playerIdx = musicians(rand).toString
- 					val player = context.actorSelection("akka.tcp://LeaderSystem" + playerIdx + "@10.0.0.1:600" + playerIdx + "/user/Player")
+ 					val player = context.actorSelection("akka.tcp://LeaderSystem" + playerIdx + "@127.0.0.1:600" + playerIdx + "/user/Node" + playerIdx + "/Player")
  					player ! new Measure(chords) 
 		 			counter = counter + 1
 		 			if (counter >= 16) {
