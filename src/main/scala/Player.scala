@@ -16,40 +16,39 @@ import akka.actor.{Props, Actor, ActorRef, ActorSystem}
 object PlayerActor {
   case class MidiNote (pitch:Int, vel:Int, dur:Int, at:Int) 
   val info = MidiSystem.getMidiDeviceInfo().filter(_.getName == "Gervill").headOption
-  // or "SimpleSynth virtual input" or "Gervill"
-  //val device = info.map(MidiSystem.getMidiDevice).getOrElse {
-    //println("[ERROR] Could not find Gervill synthesizer.")
-    //sys.exit(1)
-//}
-
-//val rcvr = device.getReceiver()
+   //or "SimpleSynth virtual input" or "Gervill"
+  val device = info.map(MidiSystem.getMidiDevice).getOrElse {
+    println("[ERROR] Could not find Gervill synthesizer.")
+    sys.exit(1)
+}
+val rcvr = device.getReceiver()
 
 /////////////////////////////////////////////////
 def note_on (pitch:Int, vel:Int, chan:Int): Unit = {
     val msg = new ShortMessage
     msg.setMessage(NOTE_ON, chan, pitch, vel)
-    //rcvr.send(msg, -1)
+    rcvr.send(msg, -1)
 }
 
 def note_off (pitch:Int, chan:Int): Unit = {
     val msg = new ShortMessage
     msg.setMessage(NOTE_ON, chan, pitch, 0)
-    //rcvr.send(msg, -1)
+    rcvr.send(msg, -1)
 }
 
 }
 
 //////////////////////////////////////////////////
 
-class PlayerActor () extends Actor{
+class PlayerActor (displayRef:ActorRef) extends Actor{
   import PlayerActor._
   import ProviderActor._
   import DataBaseActor._
-  //device.open()
+  device.open()
 
   def receive = {
     case Measure(l) => {
-      println("Playing Measure")
+      displayRef ! Message("Playing Measure")
       for (c <- l) {
         receive(c)
       }

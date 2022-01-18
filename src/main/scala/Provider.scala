@@ -4,32 +4,48 @@ package upmc.akka.leader
 
 import akka.actor.{Props, Actor, ActorRef, ActorSystem}
 import DataBaseActor._
+import akka.util.Timeout
+import akka.pattern.ask
+import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent.Await
+
 
 
 object ProviderActor {
   case class GetMeasure (num:Int, counter:Int)
-  case class GetMeasureList (num:Int)
-  case class AnswerList (measures:List[Measure])
+
+  case class ProviderFailedException() extends Exception
+
 }
 
 
 //////////////////////////////////////////////////
 
 class ProviderActor () extends Actor {
-  import Conductor._
   import ProviderActor._
-  
+  import DataBaseActor._
+
+  implicit val timeout = Timeout(5 seconds)
+  val waitTime = 10 seconds
+
+// Only called at initialisation, to retrieve measures' list
+// Measures cannot be stored inside Provider actor because the file's size exceeds maximum size
   val dbActor = context.actorOf(Props[DataBaseActor], name = "DataBaseActor")
   var myCounter = 0
   var sum = 0
+
+  val futureMeasures = dbActor ? GetMeasureList
+  val measures = Await.result(futureMeasures, waitTime).asInstanceOf[List[Measure]] 
 
   def receive = {
     case GetMeasure(num, counter) => {
       myCounter = counter
       sum = num
-      dbActor ! GetMeasureList(num)
-    }
-    case AnswerList(measures) => {
       var index: Int = 0
       if (myCounter < 8) {
         index = t1(sum)(myCounter) - 1
@@ -37,11 +53,11 @@ class ProviderActor () extends Actor {
       else {
         index = t2(sum)(myCounter-8) - 1
       }
-      println("Sending measure for sum:" + sum + " and counter:" + myCounter)
       val measure: Measure = measures(index)
-      context.parent ! measure
+      sender ! measure
     }
   }
+  
 
   val t1 = Array( Array ( 96, 22, 141, 41, 105, 122, 11, 30),
 Array(32, 6, 128, 63, 146, 46, 134, 81),

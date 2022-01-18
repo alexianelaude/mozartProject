@@ -20,7 +20,7 @@ object Heart {
 
 }
 
-class Heart () extends Actor {
+class Heart (displayRef:ActorRef) extends Actor {
 
     import Heart._
     import HeartStatuses._
@@ -31,10 +31,10 @@ class Heart () extends Actor {
       case CheckLiveness => {
         sender ! heartStatus
       }
-    case ChangeStatus(status:HeartStatus) => {
-      println("Changing status from " + heartStatus + " to " + status)
-      heartStatus = status
-    }
-    }
+      case ChangeStatus(status:HeartStatus) => {
+        displayRef ! Message("Changing status from " + heartStatus + " to " + status)
+        heartStatus = status
+      }
+  }
 	
 }

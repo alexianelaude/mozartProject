@@ -17,7 +17,7 @@ object Checker {
 	import Heart._
 
 	case class Check ()
-	case class RunElection(musiciansAlive:Array[HeartStatus])
+	case class RunElection(musiciansAlive:List[HeartStatus])
 	case class AvailableMusicians(musicians:List[Int])
 
 }
@@ -27,9 +27,7 @@ class Checker () extends Actor {
 	import Checker._
 	import Heart._
 
- 	implicit val timeout = Timeout(3 seconds)
-
-	var musiciansAlive : Array[HeartStatus] = Array(Dead, Dead, Dead, Dead)
+ 	implicit val timeout = Timeout(2 seconds)
 
 	val heart0 = context.actorSelection("akka.tcp://LeaderSystem0@127.0.0.1:6000/user/Node0/Heart")
 	val heart1 = context.actorSelection("akka.tcp://LeaderSystem1@127.0.0.1:6001/user/Node1/Heart")
@@ -39,36 +37,41 @@ class Checker () extends Actor {
 	val hearts : List[ActorSelection] = List(heart0, heart1, heart2, heart3)
 
      def receive = {
-          // Initialisation
           case Check => {
-          	   for (i <- 0 to 3) {
-          	   		var future = hearts(i) ? CheckLiveness
-          	   		future.onComplete {
-          	   			case Success(status:HeartStatus) => {
-          	   				println("Received status " + status + " from node " + i.toString)
-          	   				musiciansAlive(i) =  status
-          	   			}
-          	   			case Success(a:Any) => { 
-          	   				println("Received: " + a)
-          	   				musiciansAlive(i) = Dead
-          	   			}
-          	   			case Failure(e) => {
-          	   				musiciansAlive(i) = Dead
-          	   			}
-          	   		}
-          	   }
-          	   if (musiciansAlive.forall( _ != LiveConductor)) {
-          	   	  context.parent ! RunElection(musiciansAlive)
-          	   }
-          	   var musicians: List[Int] = List()
-         		for (i <- 0 to 3) {
-	         		if (musiciansAlive(i) == LivePlayer) {
-	         			musicians = musicians ::: List(i)
-	         		}
-	         	}
-	         	context.parent ! AvailableMusicians(musicians) //Keep node up to date of available musicians (for Conductor)
-      		   Thread.sleep(5000)
-               receive(Check)         
+               val musiciansAlive = for {
+                    h0 <- ask(heart0, CheckLiveness).recover {
+                         case _:Throwable => Dead
+                         }.mapTo[HeartStatus]
+                    h1 <- ask(heart1, CheckLiveness).recover {
+                         case _:Throwable => Dead
+                         }.mapTo[HeartStatus]
+                    h2 <- ask(heart2, CheckLiveness).recover {
+                         case _:Throwable => Dead
+                         }.mapTo[HeartStatus]  
+                    h3 <- ask(heart3, CheckLiveness).recover {
+                         case _:Throwable => Dead
+                         }.mapTo[HeartStatus] 
+               } yield List(h0,h1,h2,h3)
+               musiciansAlive.onComplete {
+                    case Success(musiciansAlive:List[HeartStatus]) => {
+                         if (musiciansAlive.forall( _ != LiveConductor)) {
+                              context.parent ! RunElection(musiciansAlive)
+                         }
+                         var musicians: List[Int] = List()
+                         for (i <- 0 to 3) {
+                              if (musiciansAlive(i) == LivePlayer) {
+                                   musicians = musicians ::: List(i)
+                              }
+                         }
+                         context.parent ! AvailableMusicians(musicians) //Keep node up to date of available musicians (for Conductor)
+                         Thread.sleep(1000)
+                          receive(Check)
+                    }
+                    case Failure(e) => {
+                         context.stop(self)
+                    }
+               }
+          	         
           }
 
      }

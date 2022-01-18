@@ -5,6 +5,7 @@ lazy val root = (project in file(".")).
     scalaVersion := "2.11.8"
   )
   
+fork := true
 
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.18"

@@ -16,17 +16,18 @@ class Node (val id:Int) extends Actor {
 
      // Les differents acteurs du systeme
      val displayActor = context.actorOf(Props[DisplayActor], name = "displayActor")
-     val heart = context.actorOf(Props[Heart], name = "Heart")
+     val heart = context.actorOf(Props(classOf[Heart], displayActor), name = "Heart")
      val checker = context.actorOf(Props[Checker], name = "Checker")
-     val conductor = context.actorOf(Props(classOf[Conductor], id), name = "Conductor")
-     val player = context.actorOf(Props[PlayerActor], name = "Player")
+     val conductor = context.actorOf(Props(classOf[Conductor], id, displayActor), name = "Conductor")
+     val player = context.actorOf(Props(classOf[PlayerActor], displayActor), name = "Player")
 
      var availableMusicians : List[Int] = List()
 
      final override val supervisorStrategy = OneForOneStrategy() { 
-     	case _: ActorInitializationException => Stop 
+     	case _: ActorInitializationException => Restart 
      	case _: ActorKilledException => Stop
-		case _: Exception => Restart
+     	case _: ConductorStoppedException => Stop
+		case _: Exception => Restart 
 		case _ => Escalate
 	}
 
@@ -35,10 +36,10 @@ class Node (val id:Int) extends Actor {
 
           // Initialisation
           case Start => {
-               displayActor ! Message ("Node " + this.id + " is created")  
+               displayActor ! Message ("Node " + this.id + " is created")
                checker ! Check
             }
-          case RunElection(musiciansAlive:Array[HeartStatus]) => {
+          case RunElection(musiciansAlive:List[HeartStatus]) => {
           	//Election protocol: the node with the lowest id currently running becomes conductor
           	//All Nodes check whether they have become conductor, and start conducting if needed
           		displayActor ! Message ("Beginning conductor election, with musicians' status: " + musiciansAlive.mkString(", "))
@@ -52,15 +53,16 @@ class Node (val id:Int) extends Actor {
           		}
           		if (i == id) {
           			// Node becomes conductor
+                         heart ! ChangeStatus(LiveConductor)
           			displayActor ! Message("Node " + this.id + " has been elected conductor")
           			conductor ! StartConductor
-          			heart ! ChangeStatus(LiveConductor)
           		}
           	}
           case AvailableMusicians(musicians:List[Int]) => {
           		availableMusicians = musicians
           }
 	      case RequestMusicians => {
+	      	displayActor ! Message("Sending avaible musicians: " + availableMusicians.mkString(", "))
 	      	sender ! availableMusicians
 	      }
      }

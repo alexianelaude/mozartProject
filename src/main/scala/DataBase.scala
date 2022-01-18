@@ -10,9 +10,7 @@ object DataBaseActor {
  	case class Chord (date:Int, notes:List[Note]) extends ObjetMusical
  	case class Measure (chords:List[Chord]) extends ObjetMusical
  
- 	case class GetMeasureList (num:Int)
- 	case class AnswerList(measures:List[Measure])
- 	case class Start()
+ 	case class GetMeasureList ()
 
 val measures1 : List [Measure] = List (
 Measure (List (Chord (0 , List (Note(42 ,610, 86), Note(54 ,594, 81), Note(81 ,315, 96))),
@@ -865,8 +863,8 @@ class DataBaseActor () extends Actor {
     import DataBaseActor._
 
     def receive = {
-        case GetMeasureList (num) => {
-            sender ! AnswerList(measures)
+        case GetMeasureList => {
+            sender ! measures
             }
     }
 
