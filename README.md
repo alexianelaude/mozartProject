@@ -12,9 +12,13 @@ If the conductor shuts down, the other running nodes run an election to determin
 
 ## Actor's architecture
 
+![Architecture of the actors](/read_me_img/architecture.png)
+
 At startup, all actors instantiate a single instance of their respective children.
 
 ## Communication between actors
+
+![Messages exchanged by actors](/read_me_img/communication.png)
 
 - The Heart is used to communicate the status of the whole Node to other actors. This status is either Dead, LivePlayer or LiveConductor. 
 When instantiated, the status is LivePlayer, and it can be switched to LiveConductor if the Node is elected as conductor.
