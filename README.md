@@ -10,6 +10,18 @@ He then sends the measure to one of the available musicians, who plays the measu
 If a musicians shuts down, the conductor stops sending it measures. If all musicians are down, the conductor waits 10s for a musician to arrive, and otherwise shuts down.
 If the conductor shuts down, the other running nodes run an election to determine who will be the next conductor, and the concert goes on. 
 
+## Running the project
+
+To start a Node, start the sbt server, compile then run the code with:
+```console
+sbt
+compile
+run <num>
+```
+<num> being the Node number you want to run (from 0 to 3).
+  
+When starting multiple actors, wait a few seconds for the first Node to be initialized before running the second (but don't wait to long, otherwise the first Node will stop!). The third and fourth node can then be started at any moment.
+
 ## Actor's architecture
 
 ![Architecture of the actors](/read_me_img/architecture.png)
