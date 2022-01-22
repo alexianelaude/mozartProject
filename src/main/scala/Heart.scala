@@ -27,6 +27,8 @@ class Heart (displayRef:ActorRef) extends Actor {
 
     var heartStatus: HeartStatus = LivePlayer
 
+    displayRef ! Message("Heart initialized")
+
     def receive = {
       case CheckLiveness => {
         sender ! heartStatus

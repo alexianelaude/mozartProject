@@ -10,6 +10,7 @@ import scala.util.Success
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import HeartStatuses._
+import com.typesafe.config.ConfigFactory
 
 
 object Checker {
@@ -27,12 +28,17 @@ class Checker () extends Actor {
 	import Checker._
 	import Heart._
 
- 	implicit val timeout = Timeout(2 seconds)
+ 	implicit val timeout = Timeout(1.5 seconds)
 
-	val heart0 = context.actorSelection("akka.tcp://LeaderSystem0@127.0.0.1:6000/user/Node0/Heart")
-	val heart1 = context.actorSelection("akka.tcp://LeaderSystem1@127.0.0.1:6001/user/Node1/Heart")
-	val heart2 = context.actorSelection("akka.tcp://LeaderSystem2@127.0.0.1:6002/user/Node2/Heart")
-	val heart3 = context.actorSelection("akka.tcp://LeaderSystem3@127.0.0.1:6003/user/Node3/Heart")
+     val config0 = ConfigFactory.load().getConfig("system0.akka.remote.netty.tcp")
+     val config1 = ConfigFactory.load().getConfig("system1.akka.remote.netty.tcp")
+     val config2 = ConfigFactory.load().getConfig("system2.akka.remote.netty.tcp")
+     val config3 = ConfigFactory.load().getConfig("system3.akka.remote.netty.tcp")
+
+	val heart0 = context.actorSelection("akka.tcp://LeaderSystem0@" + config0.getString("hostname") + ":" + config0.getString("port") + "/user/Node0/Heart")
+	val heart1 = context.actorSelection("akka.tcp://LeaderSystem1@" + config1.getString("hostname") + ":" + config1.getString("port") + "/user/Node1/Heart")
+	val heart2 = context.actorSelection("akka.tcp://LeaderSystem2@" + config2.getString("hostname") + ":" + config2.getString("port") + "/user/Node2/Heart")
+	val heart3 = context.actorSelection("akka.tcp://LeaderSystem3@" + config3.getString("hostname") + ":" + config3.getString("port") + "/user/Node3/Heart")
 
 	val hearts : List[ActorSelection] = List(heart0, heart1, heart2, heart3)
 

@@ -1,11 +1,2 @@
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Conductor.scala:51:29: non-variable type argument Int in type pattern List[Int] (the underlying of List[Int]) is unchecked since it is eliminated by erasure[0m
-[0m[[0m[33mwarn[0m] [0m[0m 				case Success(musicians:List[Int]) => {[0m
-[0m[[0m[33mwarn[0m] [0m[0m 				                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Conductor.scala:67:30: non-variable type argument Int in type pattern List[Int] (the underlying of List[Int]) is unchecked since it is eliminated by erasure[0m
-[0m[[0m[33mwarn[0m] [0m[0m	 				case Success(musicians:List[Int]) => {[0m
-[0m[[0m[33mwarn[0m] [0m[0m	 				                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/Alexiane/Documents/STL/PPC/mozartProject/src/main/scala/Conductor.scala:107:31: non-variable type argument Int in type pattern List[Int] (the underlying of List[Int]) is unchecked since it is eliminated by erasure[0m
-[0m[[0m[33mwarn[0m] [0m[0m				 		case Success(musicians:List[Int]) => {[0m
-[0m[[0m[33mwarn[0m] [0m[0m				 		                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mthere were 7 feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mfour warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0mthere were 6 feature warnings; re-run with -feature for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

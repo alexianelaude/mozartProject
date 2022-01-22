@@ -63,7 +63,7 @@ class Node (val id:Int) extends Actor {
           }
 	      case RequestMusicians => {
 	      	displayActor ! Message("Sending avaible musicians: " + availableMusicians.mkString(", "))
-	      	sender ! availableMusicians
+	      	sender ! AvailableMusicians(availableMusicians)
 	      }
      }
 }

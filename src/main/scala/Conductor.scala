@@ -12,6 +12,7 @@ import scala.util.Success
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.OneForOneStrategy
 import akka.actor.SupervisorStrategy._
+import com.typesafe.config.ConfigFactory
 
 
  object Conductor {
@@ -47,7 +48,7 @@ import akka.actor.SupervisorStrategy._
  			Thread.sleep(10000)
  			val future = context.parent ? RequestMusicians
  			future.onComplete {
- 				case Success(musicians:List[Int]) => {
+ 				case Success(AvailableMusicians(musicians:List[Int])) => {
  					if (musicians.length >= 1) receive(Conduct)
  					else stopActor("No available musicians found")
  				}
@@ -63,7 +64,7 @@ import akka.actor.SupervisorStrategy._
  			val futureMeasure = provider ? GetMeasure(dice1 + dice2, counter)
  			try {
  				futureMusicians.onComplete{
-	 				case Success(musicians:List[Int]) => {
+	 				case Success(AvailableMusicians(musicians:List[Int])) => {
 	 					if (musicians.isEmpty) {
 		 					displayRef ! Message("Received empty musicians")
 							throw NoMusiciansException()
@@ -71,7 +72,9 @@ import akka.actor.SupervisorStrategy._
 						else {
 							val rand = (new Random).nextInt(musicians.length)
 							val playerIdx = musicians(rand).toString
-							val player = context.actorSelection("akka.tcp://LeaderSystem" + playerIdx + "@127.0.0.1:600" + playerIdx + "/user/Node" + playerIdx + "/Player")
+							val playerConfig = ConfigFactory.load().getConfig("system" + playerIdx + ".akka.remote.netty.tcp")
+							val player = context.actorSelection("akka.tcp://LeaderSystem" + playerIdx + "@" + playerConfig.getString("hostname") 
+								+ ":" + playerConfig.getString("port") + "/user/Node" + playerIdx + "/Player")
 							displayRef ! Message("Chose node " + playerIdx + " as player")
 							futureMeasure.onComplete {
 								case Success(measure:Measure) => {
@@ -102,7 +105,7 @@ import akka.actor.SupervisorStrategy._
 				 	Thread.sleep(10000)
 				 	val future = context.parent ? RequestMusicians
 				 	future.onComplete {
-				 		case Success(musicians:List[Int]) => {
+				 		case Success(AvailableMusicians(musicians:List[Int])) => {
 			 				if (musicians.isEmpty) {
 			 					stopActor("No available musicians found")
 			 				}
